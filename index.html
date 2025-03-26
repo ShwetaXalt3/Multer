@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+        }
+        #message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Upload a File</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+    <p id="message"></p>
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const message = document.getElementById("message");
+
+            if (!fileInput.files.length) {
+                message.innerText = "Please select a file.";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file); // "file" must match @UploadedFile() decorator in NestJS
+
+            message.innerText = "Uploading...";
+
+            fetch("http://localhost:5000/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                message.innerText = `File uploaded: ${data.filename}`;
+            })
+            .catch(error => {
+                message.innerText = "Error uploading file.";
+                console.error("Upload error:", error);
+            });
+        }
+    </script>
+
+</body>
+</html>
